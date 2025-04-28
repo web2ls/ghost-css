@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/web2ls/ghost-css#readme",
   "dependencies": {
-    "files": "^3.0.2"
+    "files": "^3.0.2",
+    "find-in-files": "^0.5.0",
+    "recursive-readdir": "^2.2.3"
   }
 }
