@@ -5,7 +5,7 @@ const getFilePath = (filePath) => {
   return path.slice(0, path.length - 1).join("/");
 };
 
-const readmes = await walk("test")
+const readmes = await walk("./")
 .filter(/[.tsx | .pcss]$/);
 const store = new Map();
 for (const filePath of readmes) {
@@ -40,7 +40,15 @@ for (const [key, value] of store) {
   const cssFilePath = value.find((path) => path.endsWith(".pcss"));
   const tsxFilePath = value.find((path) => path.endsWith(".tsx"));
 
+  if (!cssFilePath || !tsxFilePath) {
+    continue;
+  }
+
   const cssFile = await read(cssFilePath);
+  if (!cssFile) {
+    console.log("css file not found", cssFilePath);
+    throw new Error("css file not found on path: " + key);
+  }
 
   const cssClasses = [...cssFile.matchAll(/\.(.*?)\s/g)]
   .map((match) => {
@@ -58,7 +66,7 @@ for (const [key, value] of store) {
   const formattedPath = getFilePath(cssFilePath)
 
   uniqueCssClasses.forEach((cssClass) => {
-    if (tsxFile.indexOf(cssClass) === -1) {
+    if (!tsxFile.includes(`styles.${cssClass}`) && !tsxFile.includes(`s.${cssClass}`)) {
       if (ghostClasses.has(formattedPath)) {
         ghostClasses.get(formattedPath).push(cssClass);
       } else {
