@@ -1,8 +1,11 @@
 import { read, walk } from "files";
 import { getFilePathWithoutFilename } from "./utils.js";
 
+const t0 = performance.now();
 const readmes = await walk("./")
-.filter(/[.tsx | .pcss]$/);
+.filter(/[.tsx | .pcss]$/)
+.filter((file) => !/node_modules/.test(file) && !/dist/.test(file) && !/build/.test(file) && !/coverage/.test(file) && !/.git/.test(file) && !/.js$/.test(file) && !/.ts$/.test(file));
+
 const store = new Map();
 for (const filePath of readmes) {
   const formattedPath = getFilePathWithoutFilename(filePath);
@@ -69,3 +72,5 @@ for (const [key, value] of store) {
 
   console.log("ghost classes", ghostClasses);
 }
+const t1 = performance.now();
+console.log("Execution time: " + (t1 - t0) + " milliseconds.");
