@@ -1,8 +1,17 @@
 import { read, walk } from "files";
 import { getFilePathWithoutFilename } from "./utils.js";
 
+const args = process.argv.slice(2);
+
+if (args.length === 0 || args.length > 1) {
+  console.log("Please provide a path to the directory you want to scan.");
+  process.exit(1);
+}
+
+const userPath = args[0];
+
 const t0 = performance.now();
-const readmes = await walk("./")
+const readmes = await walk(userPath)
 .filter(/[.tsx | .pcss]$/)
 .filter((file) => !/node_modules/.test(file) && !/dist/.test(file) && !/build/.test(file) && !/coverage/.test(file) && !/.git/.test(file) && !/.js$/.test(file) && !/.ts$/.test(file));
 
