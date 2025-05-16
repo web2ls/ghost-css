@@ -11,16 +11,18 @@ if (args.length === 0 || args.length > 1) {
 const userPath = args[0];
 
 const t0 = performance.now();
-const readmes = await walk(userPath)
+const filesPaths = await walk(userPath)
 .filter(/[.tsx | .pcss]$/)
 .filter((file) => !/node_modules/.test(file) && !/dist/.test(file) && !/build/.test(file) && !/coverage/.test(file) && !/.git/.test(file) && !/.js$/.test(file) && !/.ts$/.test(file));
 
-const store = new Map();
-for (const filePath of readmes) {
-  const formattedPath = getFilePathWithoutFilename(filePath);
+const pathStore = new Map();
+for (const filePath of filesPaths) {
+  const pathWithoutFilename = getFilePathWithoutFilename(filePath);
 
-  if (store.has(formattedPath)) {
-    const existsValue = store.get(formattedPath)[0];
+  if (pathStore.has(pathWithoutFilename)) {
+    // FIXME: this case is not working
+    // because the file name is not the same as expected
+    const existsValue = pathStore.get(pathWithoutFilename)[0];
     const existsValueNameWithExt = existsValue.split("/").pop();
     const existsValueName = existsValueNameWithExt.split(".")[0];
 
@@ -28,20 +30,20 @@ for (const filePath of readmes) {
     const newValueName = newValueNameWithExt.split(".")[0];
 
     if (existsValueName === newValueName) {
-      store.set(formattedPath, [existsValue, filePath]);
+      pathStore.set(pathWithoutFilename, [existsValue, filePath]);
     }
   } else {
-    store.set(formattedPath, [filePath]);
+    pathStore.set(pathWithoutFilename, [filePath]);
   }
 }
 
-store.forEach((value, key) => {
+pathStore.forEach((value, key) => {
   if (value.length !== 2) {
-    store.delete(key);
+    pathStore.delete(key);
   }
 })
 
-for (const [key, value] of store) {
+for (const [key, value] of pathStore) {
   const cssFilePath = value.find((path) => path.endsWith(".pcss"));
   const tsxFilePath = value.find((path) => path.endsWith(".tsx"));
 
@@ -81,5 +83,6 @@ for (const [key, value] of store) {
 
   console.log("ghost classes", ghostClasses);
 }
+
 const t1 = performance.now();
 console.log("Execution time: " + (t1 - t0) + " milliseconds.");
