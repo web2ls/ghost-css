@@ -1,5 +1,9 @@
 import { read, walk } from "files";
-import { getFilePathWithoutFilename } from "./utils.js";
+import {
+  getFilePathWithoutFilename,
+  getFileNameWithoutExt,
+  getTailDir,
+} from "./utils.js";
 
 const args = process.argv.slice(2);
 
@@ -17,23 +21,24 @@ const filesPaths = await walk(userPath)
 
 const pathStore = new Map();
 for (const filePath of filesPaths) {
-  const pathWithoutFilename = getFilePathWithoutFilename(filePath);
+  const pathToFileWithoutFileName = getFilePathWithoutFilename(filePath);
 
-  if (pathStore.has(pathWithoutFilename)) {
-    // FIXME: this case is not working
-    // because the file name is not the same as expected
-    const existsValue = pathStore.get(pathWithoutFilename)[0];
-    const existsValueNameWithExt = existsValue.split("/").pop();
-    const existsValueName = existsValueNameWithExt.split(".")[0];
+  if (pathStore.has(pathToFileWithoutFileName)) {
+    const existsFilePath = pathStore.get(pathToFileWithoutFileName)[0];
+    const existsFileName = getFileNameWithoutExt(existsFilePath);
 
-    const newValueNameWithExt = filePath.split("/").pop();
-    const newValueName = newValueNameWithExt.split(".")[0];
+    const newFileName = getFileNameWithoutExt(filePath);
 
-    if (existsValueName === newValueName) {
-      pathStore.set(pathWithoutFilename, [existsValue, filePath]);
+    if (existsFileName === newFileName) {
+      pathStore.set(pathToFileWithoutFileName, [existsFilePath, filePath]);
     }
   } else {
-    pathStore.set(pathWithoutFilename, [filePath]);
+    const tailDir = getTailDir(filePath);
+    const newFileName = getFileNameWithoutExt(filePath);
+
+    if (tailDir === newFileName) {
+      pathStore.set(pathToFileWithoutFileName, [filePath]);
+    }
   }
 }
 
