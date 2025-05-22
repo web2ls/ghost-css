@@ -69,7 +69,8 @@ for (const [key, value] of pathStore) {
 
   const cssFile = await read(cssFilePath)
   if (!cssFile) {
-    throw new Error('css file not found on path: ' + key)
+    console.error('css file not found on path: ' + cssFilePath)
+    continue
   }
 
   const cssClasses = [...cssFile.matchAll(/\.(.*?)\s/g)].map((match) => {
