@@ -99,7 +99,6 @@ for (const [key, value] of pathStore) {
     }
   })
 
-  console.log('ghost classes', ghostClasses.get(formattedPath))
   if (!ghostClasses.get(formattedPath)) {
     continue
   }
