@@ -20,14 +20,7 @@ const t0 = performance.now()
 const filesPaths = await walk(userPath)
   .filter(/[.tsx | .pcss]$/)
   .filter(
-    (file) =>
-      !/node_modules/.test(file) &&
-      !/dist/.test(file) &&
-      !/build/.test(file) &&
-      !/coverage/.test(file) &&
-      !/.git/.test(file) &&
-      !/.js$/.test(file) &&
-      !/.ts$/.test(file)
+    (file) => !/node_modules|dist|build|coverage|\.git|\.js$|\.ts$/.test(file)
   )
 
 const pathStore = new Map()
@@ -76,7 +69,7 @@ for (const [key, value] of pathStore) {
   const cssClasses = [...cssFile.matchAll(/\.(.*?)\s/g)].map((match) => {
     let item = match[0]
     item = item.replace(/^\.|\s$/g, '')
-    return item
+    return item.split(':')[0]
   })
 
   const uniqueCssClasses = [...new Set(cssClasses)]
